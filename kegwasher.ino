@@ -59,6 +59,27 @@ typedef struct mode_s {
   step_t *steps;
 } mode_t;
 
+step_t STEPS_DRAIN_SANITIZER[] = {
+  {CONFIG_DRAIN_SANITIZER, 200},
+  {CONFIG_END, 0}
+};
+
+step_t STEPS_DRAIN_CLEANER[] = {
+  {CONFIG_DRAIN_CLEANER, 200},
+  {CONFIG_END, 0}
+};
+
+step_t STEPS_FILL_SANITIZER[] = {
+  {CONFIG_FILL_SANITIZER, 120},
+  {CONFIG_END, 0}
+};
+
+step_t STEPS_FILL_CLEANER[] = {
+  {CONFIG_FILL_CLEANER, 120},
+  {CONFIG_END, 0}
+};
+
+
 // 579sec (9min39)
 step_t STEPS_WASH_KEG[] = {
   // 25sec
@@ -210,6 +231,10 @@ mode_t MODES[] = {
   {"Lavage CO2", STEPS_WASH_KEG_PRESSURIZE},
   {"Desinf. CO2", STEPS_SANITIZE_KEG_PRESSURIZE},
   {"Vidange fut", STEPS_DRAIN_KEG},
+  {"Vidange desinf.", STEPS_DRAIN_SANITIZER},
+  {"Vidange deter.", STEPS_DRAIN_CLEANER},
+  {"Rempl. desinf.", STEPS_FILL_SANITIZER},
+  {"Rempl. deter.", STEPS_FILL_CLEANER},
 };
 
 int MODES_NUMBER = sizeof(MODES) / sizeof(mode_t);
@@ -347,10 +372,10 @@ void controls_set_state(unsigned int config, int state, int delay_time)
 void controls_set(unsigned int config)
 {
   // Turn off all controls to avoid temporary overconsumption
-  controls_set_state(~config, LOW, 0);
+  controls_set_state(~config, HIGH, 0);
 
   // Turn on all needed controls and wait slowly to avoid temporary overconsumption
-  controls_set_state(config, HIGH, 200);
+  controls_set_state(config, LOW, 200);
 }
 
 unsigned int step_set(int index)
