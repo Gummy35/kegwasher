@@ -277,6 +277,8 @@ int mode_full_time;
 int step;
 int step_start_time;
 
+const char *config_label;
+
 void lcd_printf(const char *fmt, ...)
 {
   char buf1[17];
@@ -331,6 +333,51 @@ int seconds()
 
 void controls_set_state(unsigned int config, int state, int delay_time)
 {
+  switch(config) {
+    case CONFIG_DRAIN:
+      config_label = "Vidange";
+      break;
+    case CONFIG_DRAIN_SANITIZER:
+      config_label = "Vidange desinf.";
+      break;
+    case CONFIG_DRAIN_CLEANER:
+      config_label = "Vidange deter.";
+      break;
+    case CONFIG_FILL_SANITIZER:
+      config_label = "Rempl. desinf.";
+      break;
+    case CONFIG_FILL_CLEANER:
+      config_label = "Rempl. deter.";
+      break;
+    case CONFIG_RINCE:
+      config_label = "Rincage";
+      break;
+    case CONFIG_RINCE_PURGE:
+      config_label = "Purge air";
+      break;
+    case CONFIG_RINCE_PURGE_CO2:
+      config_label = "Purge CO2";
+      break;
+    case CONFIG_CLEAN:
+      config_label = "Detergent";
+      break;
+    case CONFIG_CLEAN_PURGE:
+      config_label = "Purge deter.";
+      break;
+    case CONFIG_SANITIZE:
+      config_label = "Desinfectant";
+      break;
+    case CONFIG_SANITIZE_PURGE:
+      config_label = "Purge desinf.";
+      break;
+    case CONFIG_CO2:
+      config_label = "CO2";
+      break;
+    default:
+      config_label = "";
+      break;
+  }
+  
   if(config & CTRL_AIR) {
     digitalWrite(PIN_VALVE_AIR, state);
     delay(delay_time);
@@ -441,9 +488,13 @@ void run_update()
 
   if( mode_running_time % LED_BLINK_PERIOD < LED_BLINK_PERIOD/2 ) {
     digitalWrite(PIN_LED, HIGH);
+    lcd.setCursor(0, 0);
+    lcd_printf(config_label);
   }
   else {
     digitalWrite(PIN_LED, LOW);
+    lcd.setCursor(0, 0);
+    lcd_printf(MODES[mode].name);
   }
 
 }
